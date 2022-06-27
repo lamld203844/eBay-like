@@ -10,19 +10,14 @@
             <div class="col-4">
                 <img src = "{{ auction.photo|safe }}" alt="didn't find image">
             </div>
+            {% endif %}
 
             <div class="col-8">
                 <h3>{{ auction.title }}</h3>
-                <p><strong>Price:</strong> ${{ auction.starting_bid }}</p>
+                <strong>Price: ${{ auction.starting_bid }}</strong>
+                <p>{{ auction.description }}</p>
             </div>
-            {% else %}
-
-            <div class="col-12">
-                <h3>{{ auction.title }}</h3>
-                <p><strong>Price:</strong> ${{ auction.starting_bid }}</p>
-            </div>
-            {% endif %}
-
+            
             
         </div>
     {% endfor %}

@@ -4,9 +4,40 @@ from django.db import IntegrityError
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django import forms
 
 from .models import User, auction_listing
 
+class creating_form(forms.Form):
+    title = forms.CharField(max_length=64,
+                            widget=forms.TextInput(attrs={
+                                'class':"form-group form-control",
+                                'autofocus': True,
+                                'placeholder': "Title" 
+                            }))
+
+    description = forms.CharField(max_length=128, 
+                                widget=forms.Textarea(attrs={
+                                    'class': 'form-group form-control',
+                                    'placeholder': 'Description',
+                                }))
+
+    starting_bid = forms.DecimalField(widget=forms.NumberInput(attrs = {
+                                        'step': '0.01',
+                                        'class': 'form-group form-control',
+                                        'placeholder': 'Starting bid',
+                                    }))                       
+    
+    image = forms.CharField(max_length=128, required = False, widget=forms.TextInput(attrs={
+                                'class': 'form-group form-control',
+                                'placeholder': 'URL image address',
+                            }))
+    
+    category = forms.CharField(max_length=32, widget=forms.TextInput(attrs={
+                                'class': 'form-group form-control',
+                                'placeholder': 'Category e.g. Fashion, Toys, Electronics, Home, etc'
+                            }))
+                            
 
 def index(request):
     return render(request, "auctions/index.html",{
@@ -70,12 +101,13 @@ def create_listings(request):
     if request.method == "POST":
         #Insert to model
         
-        #take data from form
+        # Take data from form
         title = request.POST["title"]
         description = request.POST["description"]
         starting_bid = request.POST["starting_bid"]
         image = request.POST["image"]
         category = request.POST["category"]
+
         # if (data is validated):
         a = auction_listing(
             title = title,
@@ -85,13 +117,14 @@ def create_listings(request):
             category = category
         )
         a.save()
+        # else:
 
-        #redirect to Active listing
+        # redirect to Active listing
         return HttpResponseRedirect(reverse("index")
             #context announce successful creating
             )
-        # else:
+    # else:
             
-
-    
-    return render(request, "auctions/create_listing.html")
+    return render(request, "auctions/create_listing.html",{
+        'form': creating_form
+    })
