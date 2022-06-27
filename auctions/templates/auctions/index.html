@@ -5,14 +5,25 @@
 
     {% for auction in auctions %}
         <div class="row">
+
+            {% if auction.photo %}
             <div class="col-4">
-                <img src = "" alt="photo">
+                <img src = "{{ auction.photo|safe }}" alt="didn't find image">
             </div>
 
             <div class="col-8">
                 <h3>{{ auction.title }}</h3>
                 <p><strong>Price:</strong> ${{ auction.starting_bid }}</p>
             </div>
+            {% else %}
+
+            <div class="col-12">
+                <h3>{{ auction.title }}</h3>
+                <p><strong>Price:</strong> ${{ auction.starting_bid }}</p>
+            </div>
+            {% endif %}
+
+            
         </div>
     {% endfor %}
 {% endblock %}

@@ -9,12 +9,12 @@ class User(AbstractUser):
 class auction_listing(models.Model):
     title = models.CharField(max_length=64)
     description = models.CharField(max_length=256)
-    start_price = models.IntegerField()
-    photo = models.URLField(max_length=64)
+    starting_bid = models.IntegerField()
+    photo = models.CharField(max_length=128)
     category = models.CharField(max_length=32)
 
     def __str__(self):
-        return f"{self.title} - Price: {self.price}"
+        return f"{self.title} - Start price: {self.starting_bid}"
 
 class bid(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bid")
