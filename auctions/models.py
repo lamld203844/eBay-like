@@ -12,6 +12,7 @@ class auction_listing(models.Model):
     starting_bid = models.IntegerField()
     photo = models.CharField(max_length=128)
     category = models.CharField(max_length=32)
+    datetime = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.title} - Start price: {self.starting_bid}"

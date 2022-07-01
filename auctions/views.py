@@ -9,31 +9,31 @@ from django import forms
 from .models import User, auction_listing
 
 class creating_form(forms.Form):
-    title = forms.CharField(max_length=64,
+    title = forms.CharField(label = '', max_length=64,
                             widget=forms.TextInput(attrs={
                                 'class':"form-group form-control",
                                 'autofocus': True,
                                 'placeholder': "Title" 
                             }))
 
-    description = forms.CharField(max_length=128, 
+    description = forms.CharField(label = '', max_length=128, 
                                 widget=forms.Textarea(attrs={
                                     'class': 'form-group form-control',
                                     'placeholder': 'Description',
                                 }))
 
-    starting_bid = forms.DecimalField(widget=forms.NumberInput(attrs = {
+    starting_bid = forms.DecimalField(label = '', widget=forms.NumberInput(attrs = {
                                         'step': '0.01',
                                         'class': 'form-group form-control',
                                         'placeholder': 'Starting bid',
                                     }))                       
     
-    image = forms.CharField(max_length=128, required = False, widget=forms.TextInput(attrs={
+    image = forms.CharField(label = '', max_length=128, required = False, widget=forms.TextInput(attrs={
                                 'class': 'form-group form-control',
                                 'placeholder': 'URL image address',
                             }))
     
-    category = forms.CharField(max_length=32, widget=forms.TextInput(attrs={
+    category = forms.CharField(label = '', max_length=32, widget=forms.TextInput(attrs={
                                 'class': 'form-group form-control',
                                 'placeholder': 'Category e.g. Fashion, Toys, Electronics, Home, etc'
                             }))
@@ -41,9 +41,8 @@ class creating_form(forms.Form):
 
 def index(request):
     return render(request, "auctions/index.html",{
-        "auctions": auction_listing.objects.all()
+        "auctions": auction_listing.objects.all(),
     })
-
 
 def login_view(request):
     if request.method == "POST":
@@ -99,32 +98,49 @@ def register(request):
 @login_required(login_url="/login")
 def create_listings(request):
     if request.method == "POST":
-        #Insert to model
-        
-        # Take data from form
-        title = request.POST["title"]
-        description = request.POST["description"]
-        starting_bid = request.POST["starting_bid"]
-        image = request.POST["image"]
-        category = request.POST["category"]
+        # Create a form instance and populate it with data from the request (binding)
+        form = creating_form(request.POST)
 
-        # if (data is validated):
-        a = auction_listing(
-            title = title,
-            description = description,
-            starting_bid = starting_bid,
-            image = image,
-            category = category
-        )
-        a.save()
-        # else:
-
-        # redirect to Active listing
-        return HttpResponseRedirect(reverse("index")
-            #context announce successful creating
-            )
-    # else:
+        #Check data is valid (server-side)
+        if form.is_valid():
             
+            # Isolate data from "cleaned" version of form
+            title = form.cleaned_data["title"]
+            description = form.cleaned_data["description"]
+            starting_bid = form.cleaned_data["starting_bid"]
+            image = form.cleaned_data["image"]
+            category = form.cleaned_data["category"]
+
+            # Insert to model
+            a = auction_listing(
+                title = title,
+                description = description,
+                starting_bid = starting_bid,
+                photo = image,
+                category = category
+            )
+            a.save()
+
+            # redirect to Active listing
+            return HttpResponseRedirect(reverse("index")
+                #context announce successful creating
+                )
+        else:
+        # Form is invalid, then re-render with the existing data
+            return render(request, "auction/create_listing.html",{
+                'form': form
+            })
+                
     return render(request, "auctions/create_listing.html",{
-        'form': creating_form
+        'form': creating_form()
+    })
+
+def listing(request, auction_id):
+    auction = auction_listing.objects.get(pk=auction_id)
+
+    if not auction:
+        return render(request, "auctions/notfound.html")
+
+    return render(request,"auctions/listing.html",{
+        'auction': auction
     })

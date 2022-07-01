@@ -8,17 +8,21 @@
 
             {% if auction.photo %}
             <div class="col-4">
-                <img src = "{{ auction.photo|safe }}" alt="didn't find image">
+                <img src = "{{ auction.photo|safe }}" alt="didn't find image" style="max-height: 250px;">
             </div>
             {% endif %}
 
             <div class="col-8">
-                <h3>{{ auction.title }}</h3>
+                <a href="{% url 'listings' auction.id %}">
+                    <h3>{{ auction.title }}</h3>
+                </a>
                 <strong>Price: ${{ auction.starting_bid }}</strong>
                 <p>{{ auction.description }}</p>
+                <p style="color: #adb5bd;">Created {{ auction.datetime }}</p>
             </div>
             
             
         </div>
+        <br>
     {% endfor %}
 {% endblock %}
