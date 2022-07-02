@@ -18,33 +18,48 @@
             {% endif %}
         </div>
         <ul class="nav">
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'index' %}">Active Listings</a>
-            </li>
+            <button type="button" class="btn btn-light">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'index' %}">Active Listings</a>
+                </li>
+            </button>
+            
+            <button type="button" class="btn btn-light">
+                <li class="nav-item">
+                    <a class="nav-link" href="">Categories</a>
+                </li>
+            </button>
+        
+            <button type="button" class="btn btn-light">
+                <li class="nav-item">
+                    <a class="nav-link" href="">Watchlist</a>
+                </li>                
+            </button>
 
-            <li class="nav-item">
-                <a class="nav-link" href="">Categories</a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="">Watchlist</a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'create_listings' %}">Create Listings</a>
-            </li>
+            <button type="button" class="btn btn-light">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'create_listings' %}">Create Listings</a>
+                </li>                
+            </button>
 
             {% if user.is_authenticated %}
+            <button type="button" class="btn btn-light">
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
-                </li>
+                </li>                
+            </button>
             {% else %}
+            <button type="button" class="btn btn-light">
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'login' %}">Log In</a>
-                </li>
+                </li>                
+            </button>
+
+            <button type="button" class="btn btn-light">
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'register' %}">Register</a>
-                </li>
+                </li>                
+            </button>
             {% endif %}
         </ul>
         <hr>

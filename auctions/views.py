@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django import forms
 
-from .models import User, auction_listing
+from .models import User, auction_listing, watchlist
 
 class creating_form(forms.Form):
     title = forms.CharField(label = '', max_length=64,
@@ -111,8 +111,11 @@ def create_listings(request):
             image = form.cleaned_data["image"]
             category = form.cleaned_data["category"]
 
+            seller = request.user.id
+
             # Insert to model
             a = auction_listing(
+                seller = seller,
                 title = title,
                 description = description,
                 starting_bid = starting_bid,
@@ -144,3 +147,11 @@ def listing(request, auction_id):
     return render(request,"auctions/listing.html",{
         'auction': auction
     })
+
+@login_required(login_url="/login")
+def add_watchlist(request, id):
+    pass
+
+@login_required(login_url="/login")
+def remove_watchlist(request, id):
+    pass
