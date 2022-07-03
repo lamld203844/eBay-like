@@ -148,9 +148,20 @@ def listing(request, auction_id):
     # Check whether this listing belong current user's watchlist
     exist = True if request.user in auction.watchers.all() else False
 
+    # Check user is seller or not
+    sellerMode = True if auction.seller == request.user else False
+
+    # Get current bidder
+    if auction.active:
+        current_bidder = None
+    else:
+        current_bidder = auction.bids.get(bidding=auction.current_bid)
+
     return render(request,"auctions/listing.html",{
         'auction': auction,
-        'existing': exist
+        'existing': exist,
+        'sellerMode': sellerMode,
+        'current_bidder': current_bidder
     })
 
 @login_required(login_url="/login")
@@ -204,3 +215,15 @@ def satisfy(bidding, auction):
         return True
     else:
         return False
+
+@login_required(login_url="/login")
+def close_auction(request, auction_id):
+    if request.method == "POST":
+        # Turn active attribute to False
+        auction = auction_listing.objects.get(pk=auction_id)
+        auction.active = False
+        auction.save()
+        
+        return HttpResponseRedirect(reverse("listings", args=(auction_id,)))
+
+    return render(request, "auctions/notfound.html")

@@ -2,21 +2,37 @@
 
 {% block body %}
     <h1>Listing: {{ auction.title }}</h1>
-
-    <!-- Add to watchlist -->
-    {% if user.is_authenticated %}
-        <form action="{% url 'modify_watchlist' auction.id %}" method="post">
-            {% csrf_token %}
-            {% if existing %}
-                <button type="submit" name="watchlist" value="0" class="btn btn-outline-danger btn-sm" >
-                    Remove from watchlist 
-                </button>
-            {% else %}
-                <button type="submit" name="watchlist" value="1" class="btn btn-outline-success btn-sm">
-                    Add to watchlist 
-                </button>
-            {% endif %}
-        </form>
+    
+    {% if auction.active %}
+        <div class="row" style="padding: 0 20px;">
+            <div class="btn-group" role="group" >
+                <!-- Add to watchlist -->
+                {% if user.is_authenticated %}
+                    <form action="{% url 'modify_watchlist' auction.id %}" method="post">
+                        {% csrf_token %}
+                        {% if existing %}
+                            <button type="submit" name="watchlist" value="0" class="btn btn-outline-danger btn-sm" >
+                                Remove from watchlist 
+                            </button>
+                        {% else %}
+                            <button type="submit" name="watchlist" value="1" class="btn btn-outline-success btn-sm">
+                                Add to watchlist 
+                            </button>
+                        {% endif %}
+                    </form>
+                {% endif %}
+            
+                <!-- close auction -->
+                {% if sellerMode %}
+                <form action="{% url 'close_auction' auction.id %}" method="post">
+                    {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-warning btn-sm" >
+                            Close auction
+                        </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
     {% endif %}
 
 
@@ -30,16 +46,28 @@
         {% endif %}
     </h2>
 
-    <!-- Bid -->
     {% if user.is_authenticated %}
-        <form action="{% url 'make_bid' auction.id %}" method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <input class="form-control" type="number" step="0.01" name="bid" placeholder="Bid">
-            </div>
-            <input class="btn btn-primary" type="submit" value="Submit">
-        </form>
+        {% if auction.active %}
+            <form action="{% url 'make_bid' auction.id %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input class="form-control" type="number" step="0.01" name="bid" placeholder="Bid">
+                </div>
+                <input class="btn btn-primary" type="submit" value="Submit">
+            </form>
+        {% else %}
+        <div class="alert alert-warning" role="alert">
+            <h5>Closed</h5>
+            {% if current_bidder.user == request.user %}
+                <h5>You won this auction</h5>
+            {% else %}
+                <h5>{{ current_bidder.user }} won this auction</h5> 
+            {% endif %}
+                at {{ current_bidder.datetime }}
+        </div>
+        {% endif %}
     {% endif %}
+    <!-- Bid -->
 
     <h2>Details</h2>
     <ul>

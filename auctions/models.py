@@ -17,6 +17,7 @@ class auction_listing(models.Model):
     
     starting_bid = models.DecimalField(max_digits=32, decimal_places=2)
     current_bid = models.DecimalField(max_digits=32, decimal_places=2, blank=True, null=True)
+    active = models.BooleanField(default=True)
 
     watchers = models.ManyToManyField(User, blank=True, null=True, related_name="watched_listings")
 
