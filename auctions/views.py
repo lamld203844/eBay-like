@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django import forms
 
-from .models import User, auction_listing, watchlist
+from .models import User, auction_listing
 
 class creating_form(forms.Form):
     title = forms.CharField(label = '', max_length=64,
@@ -139,19 +139,34 @@ def create_listings(request):
     })
 
 def listing(request, auction_id):
+    # Get auction from id
     auction = auction_listing.objects.get(pk=auction_id)
 
     if not auction:
         return render(request, "auctions/notfound.html")
 
+    # Check whether this listing belong current user's watchlist
+    exist = True if request.user in auction.watchers.all() else False
+
     return render(request,"auctions/listing.html",{
-        'auction': auction
+        'auction': auction,
+        'existing': exist
     })
 
 @login_required(login_url="/login")
-def add_watchlist(request, id):
-    pass
+def modify_watchlist(request, auction_id):
+    if request.method == "POST":
 
-@login_required(login_url="/login")
-def remove_watchlist(request, id):
-    pass
+        modify = int(request.POST["watchlist"])
+        auction = auction_listing.objects.get(pk=auction_id)
+
+        # Add to watchlist
+        if modify:
+            auction.watchers.add(request.user)
+        else:
+        # Remove from watchlist
+            auction.watchers.remove(request.user)
+                        
+        return HttpResponseRedirect(reverse("listings", args=(auction_id,)))
+
+    return render(request, "auctions/notfound.html")

@@ -4,16 +4,16 @@
     <h1>Listing: {{ auction.title }}</h1>
 
     {% if user.is_authenticated %}
-        <form action="" method="post">
+        <form action="{% url 'modify_watchlist' auction.id %}" method="post">
             {% csrf_token %}
-            {% if auction.watchlist %}
-                <h5><span name="watchlist" type="submit" value="0" class="badge bg-secondary" style="color: white;">
+            {% if existing %}
+                <button type="submit" name="watchlist" value="0" class="btn btn-outline-danger btn-sm" >
                     Remove from watchlist 
-                </span></h5>
+                </button>
             {% else %}
-                <h5><span name="watchlist" type="submit" value="1" class="badge bg-secondary" style="color: white;">
+                <button type="submit" name="watchlist" value="1" class="btn btn-outline-success btn-sm">
                     Add to watchlist 
-                </span></h5>        
+                </button>
             {% endif %}
         </form>
     {% endif %}
