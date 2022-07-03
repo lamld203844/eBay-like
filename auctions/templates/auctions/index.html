@@ -16,7 +16,13 @@
                 <a href="{% url 'listings' auction.id %}">
                     <h3>{{ auction.title }}</h3>
                 </a>
-                <strong>Price: ${{ auction.starting_bid }}</strong>
+                <strong>Price: $
+                    {% if not auction.current_bid %}
+                        {{ auction.starting_bid }}
+                    {% else %}
+                        {{ auction.current_bid }}
+                    {% endif %}
+                </strong>
                 <p>{{ auction.description }}</p>
                 <p style="color: #adb5bd;">Created {{ auction.datetime }}</p>
             </div>

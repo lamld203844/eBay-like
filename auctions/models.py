@@ -11,22 +11,26 @@ class auction_listing(models.Model):
 
     title = models.CharField(max_length=64)
     description = models.CharField(max_length=256)
-    starting_bid = models.DecimalField(max_digits=32, decimal_places=2)
     photo = models.CharField(max_length=128, blank=True)
     category = models.CharField(max_length=32, blank=True)
     datetime = models.DateTimeField(auto_now=True)
     
+    starting_bid = models.DecimalField(max_digits=32, decimal_places=2)
+    current_bid = models.DecimalField(max_digits=32, decimal_places=2, blank=True, null=True)
+
     watchers = models.ManyToManyField(User, blank=True, null=True, related_name="watched_listings")
 
     def __str__(self):
-        return f"{self.title} - Start price: {self.starting_bid}"
+        return f"{self.title}"
 
 class bid(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bid")
-    bid = models.IntegerField()
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name="bid")
+    bidding = models.DecimalField(max_digits=32, decimal_places=2)
+    listing = models.ForeignKey(auction_listing, on_delete=models.PROTECT, related_name="bids")
+    datetime = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.bid}"
+        return f"{self.user} {self.listing} {self.bidding}"
 
 class comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")

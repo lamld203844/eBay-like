@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django import forms
 
-from .models import User, auction_listing
+from .models import User, auction_listing, bid
 
 class creating_form(forms.Form):
     title = forms.CharField(label = '', max_length=64,
@@ -166,7 +166,41 @@ def modify_watchlist(request, auction_id):
         else:
         # Remove from watchlist
             auction.watchers.remove(request.user)
-                        
+
         return HttpResponseRedirect(reverse("listings", args=(auction_id,)))
 
     return render(request, "auctions/notfound.html")
+
+@login_required(login_url="/login")
+def make_bid(request, auction_id):
+    if request.method == "POST":
+        bidding = float(request.POST["bid"])
+
+        # get current bid of listing
+        auction = auction_listing.objects.get(pk=auction_id)
+
+        # If bidding - satisfy - auction
+        if satisfy(bidding, auction):
+            # replace current_bid
+            auction.current_bid = bidding
+            auction.save()
+
+            # add current winning bidder
+            instance = bid(
+                user = request.user,
+                bidding = bidding,
+                listing = auction
+            )
+            instance.save()
+            # add.user.add(request.user)
+            # add.listing.add(auction)
+        
+        return HttpResponseRedirect(reverse("listings", args=(auction_id,)))
+
+    return render(request, "auctions/notfound.html")
+
+def satisfy(bidding, auction):
+    if (bidding > auction.starting_bid) and (auction.current_bid is None or bidding > auction.current_bid):
+        return True
+    else:
+        return False
