@@ -1,0 +1,8 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <img src="" alt="avatar">
+    <h1>{{ user.username }}</h1>
+    <h2>{{ user.first_name }} {{ user.last_name }} </h2>
+    <a href="mailto:{{ request.user.email|safe }}">{{ user.email }}</a>
+{% endblock %}

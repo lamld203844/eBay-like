@@ -71,7 +71,12 @@
 
     <h2>Details</h2>
     <ul>
-        <li>Listed by {{ auction.seller }} </li>
+        <li>Listed by
+            
+            <a href="{% url 'profile' auction.seller.id %}">
+                {{ auction.seller }}
+            </a> 
+        </li>
         <li>
             {% if auction.category %}
                 Category: {{ auction.category }}
@@ -80,5 +85,34 @@
             {% endif %}
         </li>
     </ul>
+    {% if user.is_authenticated %}
+        <h2>Discussion</h2>
+        <ul class="list-group">
+            {% for comment in discussion %}
+                <li class="list-group-item">
+                    <a href="{% url 'profile' comment.user.id %}">
+                        {{ comment.user }} 
+                    </a>
+                    {{ comment.comment }}
+                </li>
+            {% endfor %}
+        </ul>
+        <!-- Listing current comments -->
+
+        <!-- Comment section  -->
+        <form action="{% url 'comment' auction.id %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <input class="form-control"  type="text" name="comment" placeholder="What do you think?">
+            </div>
+            <!-- commenting user info -->
+            <input type="hidden" name="user" value="{{ request.user.id }}">
+            <button type="submit" class="btn btn-primary" >
+                Comment
+            </button>
+        </form>
+    {% endif %}
+
+
 
 {% endblock %}

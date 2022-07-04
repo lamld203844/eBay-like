@@ -1,12 +1,12 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django import forms
 
-from .models import User, auction_listing, bid
+from .models import User, auction_listing, bid, comment
 
 class creating_form(forms.Form):
     title = forms.CharField(label = '', max_length=64,
@@ -96,6 +96,13 @@ def register(request):
         return render(request, "auctions/register.html")
 
 @login_required(login_url="/login")
+def profile(request, user_id):
+    user = User.objects.get(pk=user_id)
+    return render(request, "auctions/profile.html",{
+        'user': user
+    })
+
+@login_required(login_url="/login")
 def create_listings(request):
     if request.method == "POST":
         # Create a form instance and populate it with data from the request (binding)
@@ -151,18 +158,21 @@ def listing(request, auction_id):
     # Check user is seller or not
     sellerMode = True if auction.seller == request.user else False
 
-    # Get current bidder
-    if auction.active:
-        current_bidder = None
-    else:
-        current_bidder = auction.bids.get(bidding=auction.current_bid)
-
-    return render(request,"auctions/listing.html",{
+    # Get all comment if exist
+    discussion = auction.comments.all()
+    
+    data = {
         'auction': auction,
         'existing': exist,
         'sellerMode': sellerMode,
-        'current_bidder': current_bidder
-    })
+        'discussion': discussion
+    }
+    
+    # Get current bidder if auction is closed
+    if not auction.active:
+        data["current_bidder"] = auction.bids.get(bidding=auction.current_bid)
+
+    return render(request,"auctions/listing.html", context=data)
 
 @login_required(login_url="/login")
 def modify_watchlist(request, auction_id):
@@ -224,6 +234,23 @@ def close_auction(request, auction_id):
         auction.active = False
         auction.save()
         
+        return HttpResponseRedirect(reverse("listings", args=(auction_id,)))
+
+    return render(request, "auctions/notfound.html")
+
+@login_required(login_url="/login")
+def make_comment(request, auction_id):
+    if request.method == "POST":
+        # Get data comment from POST
+        data = request.POST["comment"]
+        user = request.POST["user"]
+
+        instance = comment(
+            user = User.objects.get(pk=user),
+            comment = data,
+            listing = auction_listing.objects.get(pk=auction_id)
+        ) 
+        instance.save()
         return HttpResponseRedirect(reverse("listings", args=(auction_id,)))
 
     return render(request, "auctions/notfound.html")

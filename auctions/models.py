@@ -36,6 +36,7 @@ class bid(models.Model):
 class comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
     comment = models.CharField(max_length=1024)
+    listing = models.ForeignKey(auction_listing, on_delete=models.PROTECT, related_name="comments")
 
     def __str__(self):
         return f"{self.comment}"
