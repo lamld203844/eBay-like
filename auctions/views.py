@@ -160,7 +160,7 @@ def listing(request, auction_id):
 
     # Get all comment if exist
     discussion = auction.comments.all()
-    
+
     data = {
         'auction': auction,
         'existing': exist,
@@ -254,3 +254,12 @@ def make_comment(request, auction_id):
         return HttpResponseRedirect(reverse("listings", args=(auction_id,)))
 
     return render(request, "auctions/notfound.html")
+
+@login_required(login_url="/login")
+def watchlist(request):
+    listings = request.user.watched_listings.all()
+    
+    return render(request, "auctions/watchlist.html",{
+        'listings': listings
+    })
+
