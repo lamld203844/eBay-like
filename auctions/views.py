@@ -118,7 +118,7 @@ def create_listings(request):
             image = form.cleaned_data["image"]
             category = form.cleaned_data["category"]
 
-            seller = request.user.id
+            seller = request.user
 
             # Insert to model
             a = auction_listing(
@@ -263,3 +263,19 @@ def watchlist(request):
         'listings': listings
     })
 
+def category(request):
+    # Get all kind of categories
+    kinds = auction_listing.objects.values_list('category', flat=True)
+    kinds = set(kinds)
+
+    return render(request, "auctions/category.html",{
+        "kinds": kinds
+    })
+
+def category_detail(request, kind):
+    categories = auction_listing.objects.filter(category=kind)
+
+    return render(request, "auctions/category_detail.html",{
+        'categories': categories,
+        'kind': kind
+    })

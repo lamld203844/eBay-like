@@ -1,0 +1,11 @@
+{% extends 'auctions/layout.html' %}
+
+{% block body %}
+    {% for kind in kinds %}
+    <div class="list-group">
+        <a href="{% url 'category_detail' kind %}" class="col-lg-6 col-sm-12 list-group-item list-group-item-action list-group-item-info">
+            {{ kind }}
+        </a>
+    </div>
+    {% endfor %}
+{% endblock %}

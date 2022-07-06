@@ -1,0 +1,34 @@
+{% extends 'auctions/layout.html' %}
+
+{% block body %}
+<h2>{{ kind }}</h2>
+
+{% for auction in categories %}
+    <div class="row">
+
+        {% if auction.photo %}
+        <div class="col-lg-4 col-sm-12">
+            <img src = "{{ auction.photo|safe }}" alt="didn't find image" style="max-height: 250px;">
+        </div>
+        {% endif %}
+
+        <div class="col-lg-8 col-sm-12">
+            <a href="{% url 'listings' auction.id %}">
+                <h3>{{ auction.title }}</h3>
+            </a>
+            <strong>Price: $
+                {% if not auction.current_bid %}
+                    {{ auction.starting_bid }}
+                {% else %}
+                    {{ auction.current_bid }}
+                {% endif %}
+            </strong>
+            <p>{{ auction.description }}</p>
+            <p style="color: #adb5bd;">Created {{ auction.datetime }}</p>
+        </div>
+        
+        
+    </div>
+    <br>
+{% endfor %}
+{% endblock %}
