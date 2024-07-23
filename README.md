@@ -45,4 +45,5 @@ python manage.py runserver
 
 ## Demo
 
-![Untitled](./assets/auctions-demo.png)
+- [Presentation slides](./assets/slides.pptx)
+- ![Untitled](./assets/auctions-demo.png)
