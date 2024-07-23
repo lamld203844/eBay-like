@@ -7,9 +7,9 @@
         <div class="row">
 
             {% if auction.photo %}
-            <div class="col-lg-4 col-sm-12">
-                <img src = "{{ auction.photo|safe }}" alt="didn't find image" style="max-height: 250px;">
-            </div>
+                <div class="col-lg-4 col-sm-12">
+                    <img src = "{{ auction.photo|safe }}" alt="didn't find image" style="max-height: 250px;">
+                </div>
             {% endif %}
 
             <div class="col-lg-8 col-sm-12">
@@ -26,7 +26,6 @@
                 <p>{{ auction.description }}</p>
                 <p style="color: #adb5bd;">Created {{ auction.datetime }}</p>
             </div>
-            
             
         </div>
         <br>
